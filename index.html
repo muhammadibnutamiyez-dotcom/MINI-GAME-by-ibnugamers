@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>GAME SNAKE JADOEL NOKIA</title>
+<style>
+body {
+  background-color:#1b3a2a;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  height:100vh;
+  margin:0;
+  font-family:sans-serif;
+  color:#fff;
+}
+h1 {color:#00ff99; text-align:center;}
+p {color:#b2ffb2; text-align:center;}
+canvas {
+  background:#15401d;
+  display:block;
+  margin:20px auto;
+  border:3px solid #00ff99;
+}
+button {
+  padding:10px 20px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+  background:#00ff99;
+  color:#000;
+  font-weight:bold;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<h1>GAME SNAKE JADOEL NOKIA</h1>
+<p>WAKTUNYA NOSTALGIA BRO</p>
+<canvas id="game" width="400" height="400"></canvas>
+<button id="restart">RESTART</button>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+const grid = 20;
+let count = 0;
+let snake = [{x:8, y:8}];
+let dx = 1;
+let dy = 0;
+let food = {x: Math.floor(Math.random()*20), y:Math.floor(Math.random()*20)};
+let score = 0;
+
+function gameLoop(){
+  requestAnimationFrame(gameLoop);
+  if(++count < 5) return;
+  count=0;
+
+  // move snake
+  let head = {x: snake[0].x + dx, y: snake[0].y + dy};
+
+  // wall collision
+  if(head.x<0||head.x>=20||head.y<0||head.y>=20||snake.some(s=>s.x===head.x && s.y===head.y)){
+    alert("GAME OVER! Score: "+score);
+    snake=[{x:8, y:8}]; dx=1; dy=0; score=0; food={x:Math.floor(Math.random()*20), y:Math.floor(Math.random()*20)};
+    return;
+  }
+
+  snake.unshift(head);
+
+  // eat food
+  if(head.x===food.x && head.y===food.y){
+    score++;
+    food={x:Math.floor(Math.random()*20), y:Math.floor(Math.random()*20)};
+  }else{
+    snake.pop();
+  }
+
+  // draw
+  ctx.fillStyle="#15401d";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  ctx.fillStyle="#ff0000";
+  ctx.fillRect(food.x*grid, food.y*grid, grid-1, grid-1);
+
+  ctx.fillStyle="#7CFC00";
+  snake.forEach(s=>ctx.fillRect(s.x*grid, s.y*grid, grid-1, grid-1));
+}
+
+// keyboard control
+document.addEventListener("keydown", e=>{
+  if(e.key==="ArrowUp" && dy===0){dx=0; dy=-1;}
+  if(e.key==="ArrowDown" && dy===0){dx=0; dy=1;}
+  if(e.key==="ArrowLeft" && dx===0){dx=-1; dy=0;}
+  if(e.key==="ArrowRight" && dx===0){dx=1; dy=0;}
+});
+
+// restart button
+document.getElementById("restart").addEventListener("click", ()=>{
+  snake=[{x:8, y:8}]; dx=1; dy=0; score=0; food={x:Math.floor(Math.random()*20), y:Math.floor(Math.random()*20)};
+});
+
+requestAnimationFrame(gameLoop);
+</script>
+</body>
+</html>
